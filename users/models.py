@@ -119,3 +119,29 @@ class SavingsPlan(models.Model):
     def __str__(self):
         return f"{self.user.email} - {self.name}"
 
+
+class Loan(models.Model):
+    LOAN_STATUS = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+    ]
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='loans')
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    tenure = models.PositiveIntegerField(help_text="Loan tenure in months")
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5.0, help_text="Interest rate as a percentage")
+    status = models.CharField(max_length=10, choices=LOAN_STATUS, default='pending')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateField(null=True, blank=True)
+
+    def total_repayable(self):
+        return self.amount + (self.amount * self.interest_rate / 100)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.status} - {self.amount}"
+
+

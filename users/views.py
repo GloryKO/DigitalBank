@@ -251,6 +251,20 @@ class FundSavingsPlanView(APIView):
          
          return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+class LoanRequestView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+        serializer = LoanRequestSerializer(data=request.data,context={'request':request})
+        if serializer.is_valid():
+            loan =serializer.save()
+            return Response({
+                "message": "Loan request submitted successfully.",
+                "loan_id": loan.id
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 

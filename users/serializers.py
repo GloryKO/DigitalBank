@@ -142,4 +142,19 @@ class FundSavingPlanSerializer(serializers.Serializer):
         if user_account.balance < data['amount']:
             raise serializers.ValidationError("Insufficient funds.")
         return data
-        
+
+class LoanRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Loan
+        fields = ['id', 'amount', 'tenure', 'interest_rate', 'status', 'requested_at', 'due_date']
+    
+    def validate(self,data):
+        user = self.context['request'].user
+
+        if not user.kyc.status != 'verified':
+            raise serializers.ValidationError("KYC verification is required to request a loan.")
+        # Check user's existing loans
+        if Loan.objects.filter(user=user, status__in=['pending', 'active']).exists():
+            raise serializers.ValidationError("You have an existing loan that must be completed before requesting another.")
+
+        return data

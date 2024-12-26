@@ -13,4 +13,5 @@ urlpatterns = [
     path('account/withdraw/', WithdrawFundsView.as_view(), name='withdraw_funds'),
     path('savings-plans/', SavingsPlanView.as_view(), name='savings_plans'),
     path('savings-plans/fund/',FundSavingsPlanView.as_view(), name='fund_savings_plan'),
+    path('loans/request/', LoanRequestView.as_view(), name='loan_request'),
 ]
